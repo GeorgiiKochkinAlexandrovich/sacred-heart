@@ -9,7 +9,7 @@ export TS_NODE_TRANSPILE_ONLY=true
 RPC="$1"
 CREATOR="DdTPV7RmR7XRritRBTSQLTKi7mFDeWyrjA43n7EibYbM"     # кошелёк для 15% (Trust Wallet)
 KEY="$HOME/.config/solana/mainnet-admin.json"              # НОВЫЙ кошелёк только для mainnet
-NEED_SOL=3
+NEED_SOL=5.5   # временно: залог за буфер + за контракт; ~половина вернётся сразу после загрузки
 
 case "$RPC" in *mainnet*) ;; *) echo "!! Нужна ссылка MAINNET RPC, например https://mainnet.helius-rpc.com/?api-key=..."; exit 1;; esac
 
