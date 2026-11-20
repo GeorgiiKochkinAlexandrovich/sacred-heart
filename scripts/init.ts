@@ -24,7 +24,9 @@ async function main() {
   const [config] = PublicKey.findProgramAddressSync([Buffer.from("config")], program.programId);
 
   if (!(await provider.connection.getAccountInfo(config))) {
-    await program.methods.initialize(CREATOR).rpc();
+    const [programData] = PublicKey.findProgramAddressSync(
+      [program.programId.toBuffer()], new PublicKey("BPFLoaderUpgradeab1e11111111111111111111111"));
+    await program.methods.initialize(CREATOR).accountsPartial({ config, programData }).rpc();
     console.log("Config создан:", config.toBase58());
   }
 
@@ -44,4 +46,4 @@ async function main() {
   }
 }
 
-main().catch((e) => { console.error(e); process.exit(1); });
+main().then(() => process.exit(0)).catch((e) => { console.error(e); process.exit(1); });

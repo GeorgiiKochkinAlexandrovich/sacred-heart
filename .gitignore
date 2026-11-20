@@ -12,3 +12,5 @@ id.json
 *.key
 .env
 update-log.txt
+upgrade-log.txt
+mainnet/*-log.txt

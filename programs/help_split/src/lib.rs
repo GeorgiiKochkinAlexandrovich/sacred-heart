@@ -10,6 +10,7 @@
 
 use anchor_lang::prelude::*;
 use anchor_lang::system_program;
+use anchor_lang::solana_program::pubkey;
 use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, TransferChecked};
 
 declare_id!("5Ei6gHSQspXtzyMH9wxAru4CEoEx2eyedBQGAPzTzNau"); // заменить после `anchor keys list`
@@ -17,8 +18,17 @@ declare_id!("5Ei6gHSQspXtzyMH9wxAru4CEoEx2eyedBQGAPzTzNau"); // заменить
 /// 15% создателю (в базисных пунктах: 1500 / 10000). Неизменяемо.
 pub const CREATOR_FEE_BPS: u64 = 1500;
 pub const BPS_DENOMINATOR: u64 = 10_000;
-/// Минимальное пожертвование в минимальных единицах (лампорты / единицы токена).
-pub const MIN_DONATION: u64 = 1_000;
+/// Минимальное пожертвование в SOL: 0.01 SOL. Меньше нельзя: 15% от суммы должны покрывать
+/// минимальный баланс («rent») нового кошелька, иначе перевод на пустой кошелёк падает.
+pub const MIN_SOL_DONATION: u64 = 10_000_000;
+/// Минимальное пожертвование в токене: 0.10 USDC (6 знаков). Защита от спама счётчиков.
+pub const MIN_TOKEN_DONATION: u64 = 100_000;
+/// Какие токены принимаются: только USDC (mainnet и devnet).
+/// Иначе любой мог бы «пожертвовать» самодельный токен и накрутить статистику.
+pub const ALLOWED_MINTS: [Pubkey; 2] = [
+    pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"), // USDC mainnet
+    pubkey!("4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU"), // USDC devnet
+];
 pub const MAX_NAME_LEN: usize = 128; // байты; кириллица = 2 байта на букву
 
 #[program]
@@ -26,8 +36,10 @@ pub mod help_split {
     use super::*;
 
     /// Один раз: создаёт глобальную конфигурацию.
-    /// `admin` лучше сделать мультиподписью (например, Squads), а не личным кошельком.
+    /// Вызвать может ТОЛЬКО владелец права на обновление контракта — иначе после деплоя
+    /// посторонний успел бы первым вызвать initialize и стать админом.
     pub fn initialize(ctx: Context<Initialize>, creator: Pubkey) -> Result<()> {
+        require!(creator != Pubkey::default(), HelpError::InvalidAddress);
         let config = &mut ctx.accounts.config;
         config.admin = ctx.accounts.admin.key();
         config.creator = creator;
@@ -45,6 +57,9 @@ pub mod help_split {
     ) -> Result<()> {
         require!(name.len() <= MAX_NAME_LEN, HelpError::NameTooLong);
         require!(!name.is_empty(), HelpError::NameTooLong);
+        // Получатель — реальный адрес и не кошелёк создателя (85% не могут уйти создателю).
+        require!(beneficiary != Pubkey::default(), HelpError::InvalidAddress);
+        require!(beneficiary != ctx.accounts.config.creator, HelpError::InvalidAddress);
 
         let config = &mut ctx.accounts.config;
         let cause = &mut ctx.accounts.cause;
@@ -74,10 +89,21 @@ pub mod help_split {
     /// Сменить кошелёк, на который приходят 15% (только админ).
     /// Процент при этом НЕ меняется — он константа. Каждая смена пишется в блокчейн событием.
     pub fn set_creator(ctx: Context<SetCreator>, new_creator: Pubkey) -> Result<()> {
+        require!(new_creator != Pubkey::default(), HelpError::InvalidAddress);
         let config = &mut ctx.accounts.config;
         let old_creator = config.creator;
         config.creator = new_creator;
         emit!(CreatorChanged { old_creator, new_creator });
+        Ok(())
+    }
+
+    /// Передать права админа (например, мультиподписи Squads). Только текущий админ.
+    pub fn set_admin(ctx: Context<SetAdmin>, new_admin: Pubkey) -> Result<()> {
+        require!(new_admin != Pubkey::default(), HelpError::InvalidAddress);
+        let config = &mut ctx.accounts.config;
+        let old_admin = config.admin;
+        config.admin = new_admin;
+        emit!(AdminChanged { old_admin, new_admin });
         Ok(())
     }
 
@@ -94,7 +120,7 @@ pub mod help_split {
     /// Пожертвование в SOL.
     pub fn donate_sol(ctx: Context<DonateSol>, amount: u64) -> Result<()> {
         require!(ctx.accounts.cause.active, HelpError::CauseInactive);
-        let (to_beneficiary, to_creator) = split(amount)?;
+        let (to_beneficiary, to_creator) = split(amount, MIN_SOL_DONATION)?;
 
         system_program::transfer(
             CpiContext::new(
@@ -138,7 +164,7 @@ pub mod help_split {
     /// Пожертвование в токене (например, USDC).
     pub fn donate_token(ctx: Context<DonateToken>, amount: u64) -> Result<()> {
         require!(ctx.accounts.cause.active, HelpError::CauseInactive);
-        let (to_beneficiary, to_creator) = split(amount)?;
+        let (to_beneficiary, to_creator) = split(amount, MIN_TOKEN_DONATION)?;
         let decimals = ctx.accounts.mint.decimals;
 
         token_interface::transfer_checked(
@@ -188,8 +214,8 @@ pub mod help_split {
 }
 
 /// Делит сумму: 15% создателю (округление вниз), остальное (>=85%) получателю.
-pub fn split(amount: u64) -> Result<(u64, u64)> {
-    require!(amount >= MIN_DONATION, HelpError::DonationTooSmall);
+pub fn split(amount: u64, min: u64) -> Result<(u64, u64)> {
+    require!(amount >= min, HelpError::DonationTooSmall);
     let to_creator = ((amount as u128) * (CREATOR_FEE_BPS as u128) / (BPS_DENOMINATOR as u128)) as u64;
     let to_beneficiary = amount - to_creator;
     Ok((to_beneficiary, to_creator))
@@ -241,6 +267,10 @@ pub struct Initialize<'info> {
     pub config: Account<'info, Config>,
     #[account(mut)]
     pub admin: Signer<'info>,
+    #[account(constraint = program.programdata_address()? == Some(program_data.key()))]
+    pub program: Program<'info, crate::program::HelpSplit>,
+    #[account(constraint = program_data.upgrade_authority_address == Some(admin.key()) @ HelpError::Unauthorized)]
+    pub program_data: Account<'info, ProgramData>,
     pub system_program: Program<'info, System>,
 }
 
@@ -263,6 +293,13 @@ pub struct AddCause<'info> {
 
 #[derive(Accounts)]
 pub struct SetCreator<'info> {
+    #[account(mut, seeds = [b"config"], bump = config.bump, has_one = admin)]
+    pub config: Account<'info, Config>,
+    pub admin: Signer<'info>,
+}
+
+#[derive(Accounts)]
+pub struct SetAdmin<'info> {
     #[account(mut, seeds = [b"config"], bump = config.bump, has_one = admin)]
     pub config: Account<'info, Config>,
     pub admin: Signer<'info>,
@@ -307,6 +344,7 @@ pub struct DonateToken<'info> {
     pub cause: Account<'info, Cause>,
     #[account(mut)]
     pub donor: Signer<'info>,
+    #[account(constraint = ALLOWED_MINTS.contains(&mint.key()) @ HelpError::MintNotAllowed)]
     pub mint: InterfaceAccount<'info, Mint>,
     #[account(mut, token::mint = mint, token::authority = donor)]
     pub donor_token: InterfaceAccount<'info, TokenAccount>,
@@ -351,6 +389,12 @@ pub struct CreatorChanged {
 }
 
 #[event]
+pub struct AdminChanged {
+    pub old_admin: Pubkey,
+    pub new_admin: Pubkey,
+}
+
+#[event]
 pub struct CauseStatusChanged {
     pub id: u32,
     pub active: bool,
@@ -368,6 +412,12 @@ pub enum HelpError {
     WrongRecipient,
     #[msg("Переполнение")]
     Overflow,
+    #[msg("Недопустимый адрес")]
+    InvalidAddress,
+    #[msg("Этот токен не принимается (только USDC)")]
+    MintNotAllowed,
+    #[msg("Нет прав: вызвать может только владелец контракта")]
+    Unauthorized,
 }
 
 #[cfg(test)]
@@ -376,7 +426,7 @@ mod tests {
 
     #[test]
     fn split_is_85_15() {
-        let (b, c) = split(1_000_000_000).unwrap(); // 1 SOL
+        let (b, c) = split(1_000_000_000, MIN_SOL_DONATION).unwrap(); // 1 SOL
         assert_eq!(c, 150_000_000);
         assert_eq!(b, 850_000_000);
         assert_eq!(b + c, 1_000_000_000);
@@ -384,13 +434,37 @@ mod tests {
 
     #[test]
     fn split_rounds_in_favor_of_beneficiary() {
-        let (b, c) = split(1_001).unwrap();
-        assert_eq!(c, 150); // 150.15 -> 150
-        assert_eq!(b, 851);
+        let (b, c) = split(10_000_001, MIN_SOL_DONATION).unwrap();
+        assert_eq!(c, 1_500_000); // 1500000.15 -> 1500000
+        assert_eq!(b, 8_500_001);
+        assert_eq!(b + c, 10_000_001);
     }
 
     #[test]
     fn split_rejects_dust() {
-        assert!(split(999).is_err());
+        assert!(split(MIN_SOL_DONATION - 1, MIN_SOL_DONATION).is_err());
+        assert!(split(MIN_TOKEN_DONATION - 1, MIN_TOKEN_DONATION).is_err());
+    }
+
+    #[test]
+    fn creator_share_covers_rent_on_minimum_sol() {
+        // 15% от минимального пожертвования должно быть больше минимального баланса кошелька (890 880 лампортов)
+        let (_, c) = split(MIN_SOL_DONATION, MIN_SOL_DONATION).unwrap();
+        assert!(c > 890_880);
+    }
+
+    #[test]
+    fn split_never_loses_or_creates_lamports() {
+        for a in [MIN_SOL_DONATION, 12_345_678, 999_999_999_999, u64::MAX] {
+            let (b, c) = split(a, MIN_SOL_DONATION).unwrap();
+            assert_eq!(b + c, a);
+            assert!(c <= a / 100 * 15 + 15);
+        }
+    }
+
+    #[test]
+    fn usdc_is_allowed_other_mints_are_not() {
+        assert!(ALLOWED_MINTS.contains(&pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")));
+        assert!(!ALLOWED_MINTS.contains(&Pubkey::default()));
     }
 }

@@ -8,6 +8,9 @@ skip-lint = false
 [programs.devnet]
 help_split = "5Ei6gHSQspXtzyMH9wxAru4CEoEx2eyedBQGAPzTzNau"
 
+[programs.mainnet]
+help_split = "5Ei6gHSQspXtzyMH9wxAru4CEoEx2eyedBQGAPzTzNau"
+
 [registry]
 url = "https://api.apr.dev"
 
