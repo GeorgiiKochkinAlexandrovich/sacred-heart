@@ -11,3 +11,4 @@ id.json
 *-keypair.json
 *.key
 .env
+update-log.txt

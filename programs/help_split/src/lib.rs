@@ -71,6 +71,16 @@ pub mod help_split {
         Ok(())
     }
 
+    /// Сменить кошелёк, на который приходят 15% (только админ).
+    /// Процент при этом НЕ меняется — он константа. Каждая смена пишется в блокчейн событием.
+    pub fn set_creator(ctx: Context<SetCreator>, new_creator: Pubkey) -> Result<()> {
+        let config = &mut ctx.accounts.config;
+        let old_creator = config.creator;
+        config.creator = new_creator;
+        emit!(CreatorChanged { old_creator, new_creator });
+        Ok(())
+    }
+
     /// Включить / выключить направление (например, сбор на операцию закрыт).
     pub fn set_cause_active(ctx: Context<SetCauseActive>, active: bool) -> Result<()> {
         ctx.accounts.cause.active = active;
@@ -252,6 +262,13 @@ pub struct AddCause<'info> {
 }
 
 #[derive(Accounts)]
+pub struct SetCreator<'info> {
+    #[account(mut, seeds = [b"config"], bump = config.bump, has_one = admin)]
+    pub config: Account<'info, Config>,
+    pub admin: Signer<'info>,
+}
+
+#[derive(Accounts)]
 pub struct SetCauseActive<'info> {
     #[account(seeds = [b"config"], bump = config.bump, has_one = admin)]
     pub config: Account<'info, Config>,
@@ -325,6 +342,12 @@ pub struct CauseAdded {
     pub id: u32,
     pub category: u8,
     pub beneficiary: Pubkey,
+}
+
+#[event]
+pub struct CreatorChanged {
+    pub old_creator: Pubkey,
+    pub new_creator: Pubkey,
 }
 
 #[event]

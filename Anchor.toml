@@ -17,3 +17,4 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 init = "npx ts-node scripts/init.ts"
+set-creator = "npx ts-node scripts/set-creator.ts"
