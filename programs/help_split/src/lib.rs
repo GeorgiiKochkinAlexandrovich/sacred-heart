@@ -1,8 +1,8 @@
 //! HelpSplit — прозрачная донат-платформа на Solana.
 //!
 //! Каждое пожертвование делится ПРЯМО В МОМЕНТ ПЕРЕВОДА:
-//!   85% -> кошелёк получателя (фонд / клиника / проверенный человек)
-//!   15% -> кошелёк создателя
+//!   94% -> кошелёк получателя (фонд / клиника / проверенный человек)
+//!   6% -> кошелёк создателя
 //!
 //! Процент зашит в код константой и НЕ может быть изменён никем,
 //! даже админом. Адрес получателя у направления тоже нельзя поменять —
@@ -15,12 +15,12 @@ use anchor_spl::token_interface::{self, Mint, TokenAccount, TokenInterface, Tran
 
 declare_id!("5Ei6gHSQspXtzyMH9wxAru4CEoEx2eyedBQGAPzTzNau"); // заменить после `anchor keys list`
 
-/// 15% создателю (в базисных пунктах: 1500 / 10000). Неизменяемо.
-pub const CREATOR_FEE_BPS: u64 = 1500;
+/// 6% создателю (в базисных пунктах: 600 / 10000). Неизменяемо.
+pub const CREATOR_FEE_BPS: u64 = 600;
 pub const BPS_DENOMINATOR: u64 = 10_000;
-/// Минимальное пожертвование в SOL: 0.01 SOL. Меньше нельзя: 15% от суммы должны покрывать
+/// Минимальное пожертвование в SOL: 0.02 SOL. Меньше нельзя: 6% от суммы должны покрывать
 /// минимальный баланс («rent») нового кошелька, иначе перевод на пустой кошелёк падает.
-pub const MIN_SOL_DONATION: u64 = 10_000_000;
+pub const MIN_SOL_DONATION: u64 = 20_000_000;
 /// Минимальное пожертвование в токене: 0.10 USDC (6 знаков). Защита от спама счётчиков.
 pub const MIN_TOKEN_DONATION: u64 = 100_000;
 /// Какие токены принимаются: только USDC (mainnet и devnet).
@@ -57,7 +57,7 @@ pub mod help_split {
     ) -> Result<()> {
         require!(name.len() <= MAX_NAME_LEN, HelpError::NameTooLong);
         require!(!name.is_empty(), HelpError::NameTooLong);
-        // Получатель — реальный адрес и не кошелёк создателя (85% не могут уйти создателю).
+        // Получатель — реальный адрес и не кошелёк создателя (94% не могут уйти создателю).
         require!(beneficiary != Pubkey::default(), HelpError::InvalidAddress);
         require!(beneficiary != ctx.accounts.config.creator, HelpError::InvalidAddress);
 
@@ -86,7 +86,7 @@ pub mod help_split {
         Ok(())
     }
 
-    /// Сменить кошелёк, на который приходят 15% (только админ).
+    /// Сменить кошелёк, на который приходят 6% (только админ).
     /// Процент при этом НЕ меняется — он константа. Каждая смена пишется в блокчейн событием.
     pub fn set_creator(ctx: Context<SetCreator>, new_creator: Pubkey) -> Result<()> {
         require!(new_creator != Pubkey::default(), HelpError::InvalidAddress);
@@ -213,7 +213,7 @@ pub mod help_split {
     }
 }
 
-/// Делит сумму: 15% создателю (округление вниз), остальное (>=85%) получателю.
+/// Делит сумму: 6% создателю (округление вниз), остальное (>=94%) получателю.
 pub fn split(amount: u64, min: u64) -> Result<(u64, u64)> {
     require!(amount >= min, HelpError::DonationTooSmall);
     let to_creator = ((amount as u128) * (CREATOR_FEE_BPS as u128) / (BPS_DENOMINATOR as u128)) as u64;
@@ -425,19 +425,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn split_is_85_15() {
+    fn split_is_94_6() {
         let (b, c) = split(1_000_000_000, MIN_SOL_DONATION).unwrap(); // 1 SOL
-        assert_eq!(c, 150_000_000);
-        assert_eq!(b, 850_000_000);
+        assert_eq!(c, 60_000_000);
+        assert_eq!(b, 940_000_000);
         assert_eq!(b + c, 1_000_000_000);
     }
 
     #[test]
     fn split_rounds_in_favor_of_beneficiary() {
-        let (b, c) = split(10_000_001, MIN_SOL_DONATION).unwrap();
-        assert_eq!(c, 1_500_000); // 1500000.15 -> 1500000
-        assert_eq!(b, 8_500_001);
-        assert_eq!(b + c, 10_000_001);
+        let (b, c) = split(20_000_001, MIN_SOL_DONATION).unwrap();
+        assert_eq!(c, 1_200_000); // 1200000.06 -> 1200000
+        assert_eq!(b, 18_800_001);
+        assert_eq!(b + c, 20_000_001);
     }
 
     #[test]
@@ -448,7 +448,7 @@ mod tests {
 
     #[test]
     fn creator_share_covers_rent_on_minimum_sol() {
-        // 15% от минимального пожертвования должно быть больше минимального баланса кошелька (890 880 лампортов)
+        // 6% от минимального пожертвования должно быть больше минимального баланса кошелька (890 880 лампортов)
         let (_, c) = split(MIN_SOL_DONATION, MIN_SOL_DONATION).unwrap();
         assert!(c > 890_880);
     }
@@ -458,7 +458,7 @@ mod tests {
         for a in [MIN_SOL_DONATION, 12_345_678, 999_999_999_999, u64::MAX] {
             let (b, c) = split(a, MIN_SOL_DONATION).unwrap();
             assert_eq!(b + c, a);
-            assert!(c <= a / 100 * 15 + 15);
+            assert!(c <= a / 100 * 6 + 6);
         }
     }
 

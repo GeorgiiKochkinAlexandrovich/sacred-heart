@@ -22,7 +22,7 @@ cd /mnt/c/Users/User/Desktop/help-split
 bash upgrade-devnet.sh "https://devnet.helius-rpc.com/?api-key=ВАШ_КЛЮЧ"
 bash publish-github.sh
 ```
-Потом сделайте тестовое пожертвование на сайте (минимум теперь 0.01 SOL).
+Потом сделайте тестовое пожертвование на сайте (минимум теперь 0.02 SOL).
 
 ## 2. Запустить контракт в mainnet
 
@@ -34,7 +34,7 @@ bash mainnet/deploy-mainnet.sh "https://mainnet.helius-rpc.com/?api-key=ВАШ_�
    не фотографируйте и не делайте скриншот;
 2. попросит пополнить этот кошелёк на 5.5 SOL (с биржи или из Trust Wallet) и запустить скрипт снова;
 3. спросит подтверждение — нужно написать `MAINNET`;
-4. загрузит контракт и создаст конфигурацию: 15% → Trust Wallet `DdTPV7…EibYbM`.
+4. загрузит контракт и создаст конфигурацию: 6% → Trust Wallet `DdTPV7…EibYbM`.
 
 ## 3. Добавить получателей
 
@@ -70,7 +70,7 @@ bash mainnet/add-causes.sh "https://mainnet.helius-rpc.com/?api-key=ВАШ_КЛ�
 ```bash
 bash mainnet/handover-multisig.sh "https://mainnet.helius-rpc.com/?api-key=ВАШ_КЛЮЧ" АДРЕС_VAULT
 ```
-После этого добавлять направления, менять кошелёк 15% и обновлять код можно только через Squads
+После этого добавлять направления, менять кошелёк 6% и обновлять код можно только через Squads
 с подписями участников. Это главная защита: даже если украдут один ключ, контракт в безопасности.
 
 ## 5. Переключить сайт на mainnet
@@ -87,5 +87,5 @@ rpc: "https://mainnet.helius-rpc.com/?api-key=КЛЮЧ_ДЛЯ_САЙТА",
 
 ## 6. Проверка после запуска
 
-- Сделайте первое пожертвование 0.01 SOL и откройте транзакцию в Explorer: 85% получателю, 15% на Trust Wallet.
-- В Trust Wallet должны прийти настоящие 0.0015 SOL.
+- Сделайте первое пожертвование 0.02 SOL и откройте транзакцию в Explorer: 94% получателю, 6% на Trust Wallet.
+- В Trust Wallet должны прийти настоящие 0.0012 SOL.

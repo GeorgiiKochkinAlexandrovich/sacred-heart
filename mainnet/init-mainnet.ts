@@ -4,11 +4,11 @@ import { setup, parseAddress, run, BPF_UPGRADEABLE } from "./common";
 
 run(async () => {
   const { provider, program, config } = setup();
-  const creator = parseAddress(process.env.CREATOR, "CREATOR (кошелёк для 15%)");
+  const creator = parseAddress(process.env.CREATOR, "CREATOR (кошелёк для 6%)");
 
   if (await provider.connection.getAccountInfo(config)) {
     const c = await program.account.config.fetch(config);
-    console.log("Конфигурация уже создана. Админ:", c.admin.toBase58(), " Кошелёк 15%:", c.creator.toBase58());
+    console.log("Конфигурация уже создана. Админ:", c.admin.toBase58(), " Кошелёк 6%:", c.creator.toBase58());
     return;
   }
   const [programData] = PublicKey.findProgramAddressSync([program.programId.toBuffer()], BPF_UPGRADEABLE);
@@ -16,6 +16,6 @@ run(async () => {
   const c = await program.account.config.fetch(config);
   console.log("Конфигурация создана:", config.toBase58());
   console.log("  Админ:      ", c.admin.toBase58());
-  console.log("  Кошелёк 15%:", c.creator.toBase58());
+  console.log("  Кошелёк 6%:", c.creator.toBase58());
   console.log("  Транзакция: ", sig);
 });

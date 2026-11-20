@@ -1,4 +1,4 @@
-// Смена кошелька для 15%. Запуск: NEW_CREATOR=<адрес> anchor run set-creator
+// Смена кошелька для 6%. Запуск: NEW_CREATOR=<адрес> anchor run set-creator
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { HelpSplit } from "../target/types/help_split";

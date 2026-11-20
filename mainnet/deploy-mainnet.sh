@@ -7,7 +7,7 @@ export PATH="$HOME/.local/share/solana/install/active_release/bin:$HOME/.avm/bin
 export TS_NODE_TRANSPILE_ONLY=true
 
 RPC="$1"
-CREATOR="DdTPV7RmR7XRritRBTSQLTKi7mFDeWyrjA43n7EibYbM"     # кошелёк для 15% (Trust Wallet)
+CREATOR="DdTPV7RmR7XRritRBTSQLTKi7mFDeWyrjA43n7EibYbM"     # кошелёк для 6% (Trust Wallet)
 KEY="$HOME/.config/solana/mainnet-admin.json"              # НОВЫЙ кошелёк только для mainnet
 NEED_SOL=5.5   # временно: залог за буфер + за контракт; ~половина вернётся сразу после загрузки
 
@@ -29,7 +29,7 @@ PID=$(solana address -k target/deploy/help_split-keypair.json)
 echo "Сеть:             MAINNET (${RPC%%\?*})"
 echo "Контракт:         $PID"
 echo "Админ (mainnet):  $ADMIN"
-echo "Кошелёк для 15%:  $CREATOR"
+echo "Кошелёк для 6%:  $CREATOR"
 
 BAL=$(solana balance "$ADMIN" --url "$RPC" | cut -d' ' -f1)
 echo "Баланс админа:    $BAL SOL"
@@ -67,7 +67,7 @@ for i in 1 2 3 4 5; do
   sleep 20
 done
 
-# 4. Конфигурация (админ = этот кошелёк, 15% = Trust Wallet)
+# 4. Конфигурация (админ = этот кошелёк, 6% = Trust Wallet)
 ANCHOR_PROVIDER_URL="$RPC" ANCHOR_WALLET="$KEY" CREATOR="$CREATOR" npx ts-node mainnet/init-mainnet.ts
 
 echo
