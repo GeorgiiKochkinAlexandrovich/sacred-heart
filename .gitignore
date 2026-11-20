@@ -1,0 +1,13 @@
+# сборка и зависимости
+target/
+node_modules/
+.anchor/
+.lock-ok
+
+# СЕКРЕТЫ — никогда не публиковать
+test-wallets/
+deploy-log.txt
+id.json
+*-keypair.json
+*.key
+.env
