@@ -8,6 +8,7 @@
 <meta property="og:title" content="Sacred Heart — каждое сердце заслуживает второй шанс">
 <meta property="og:description" content="85% каждого пожертвования — на помощь. Каждый перевод можно проверить в блокчейне.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%2313213A'/%3E%3Cpath d='M50 76 C32 63 23 52 23 41 C23 33 29 27 37 27 C43 27 47 31 50 36 C53 31 57 27 63 27 C71 27 77 33 77 41 C77 52 68 63 50 76 Z' fill='none' stroke='%23D46A77' stroke-width='6' stroke-linejoin='round'/%3E%3Cpath d='M50 44 C54 49 55 52 54 55 C53 57 47 57 46 55 C45 52 46 49 50 44 Z' fill='%23C9A45C'/%3E%3C/svg%3E">
+<script src="i18n.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
@@ -51,7 +52,8 @@
   .nav-links { display:flex; gap:28px; }
   .nav-links a { color:var(--muted); text-decoration:none; font-size:15px; }
   .nav-links a:hover { color:var(--ivory); }
-  @media (max-width:900px){ .nav-links { display:none; } }
+  .nav-links a, .logo span, .btn { white-space:nowrap; }
+  @media (max-width:1320px){ .nav-links { display:none; } }
 
   /* hero */
   .hero { background:var(--navy); color:var(--ivory); position:relative; overflow:hidden; }
@@ -177,26 +179,33 @@
   #toast.show { transform:translateX(-50%) translateY(0); }
   #toast.err { border-color:var(--rose); }
   #toast a { color:var(--gold-2); }
+  .nav-right { display:flex; align-items:center; gap:10px; }
+  .lang { min-height:44px; border-radius:999px; background:transparent; color:var(--ivory); border:1px solid rgba(244,242,238,.35); padding:0 12px; font:500 14px var(--sans); cursor:pointer; }
+  .lang:hover { border-color:var(--ivory); }
+  .lang:focus-visible { outline:3px solid var(--gold-2); outline-offset:3px; }
+  .lang option { color:#13213A; background:#fff; }
+  .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  @media (max-width:560px){ .logo span { display:none; } .nav-in { gap:10px; } .nav-right { gap:8px; } #connect { padding:6px 14px; font-size:13px; line-height:1.15; white-space:normal; max-width:150px; text-align:center; } .lang { padding:0 8px; font-size:13px; } }
 </style>
 </head>
 <body>
 
-<div class="testnet" id="netBanner" role="status">Тестовая версия: платформа работает в тестовой сети Solana (Devnet). Настоящие деньги пока не принимаются.</div>
+<div class="testnet" id="netBanner" role="status" data-i18n="banner">Тестовая версия: платформа работает в тестовой сети Solana (Devnet). Настоящие деньги пока не принимаются.</div>
 
 <header class="nav">
   <div class="wrap nav-in">
-    <a class="logo" href="#top" aria-label="Sacred Heart — на главную">
+    <a class="logo" href="#top" aria-label="Sacred Heart — на главную" data-i18n-aria="aria.home">
       <svg width="36" height="34" viewBox="8 10 84 78" aria-hidden="true"><path d="M50 82 C26 64 14 50 14 36 C14 25 22 17 32 17 C40 17 46 22 50 29 C54 22 60 17 68 17 C78 17 86 25 86 36 C86 50 74 64 50 82 Z" fill="none" stroke="#D46A77" stroke-width="7" stroke-linejoin="round"/><path d="M50 40 C55 47 57 51 55 55 C53.5 58 46.5 58 45 55 C43 51 45 47 50 40 Z" fill="#C9A45C"/></svg>
       <span>Sacred Heart</span>
     </a>
-    <nav class="nav-links" aria-label="Разделы">
-      <a href="#causes">Направления</a>
-      <a href="#how">Как это работает</a>
-      <a href="#transparency">Прозрачность</a>
-      <a href="#founder">Об основателе</a>
-      <a href="#help">Получить помощь</a>
+    <nav class="nav-links" aria-label="Разделы" data-i18n-aria="aria.sections">
+      <a href="#causes" data-i18n="nav.causes">Направления</a>
+      <a href="#how" data-i18n="nav.how">Как это работает</a>
+      <a href="#transparency" data-i18n="nav.transp">Прозрачность</a>
+      <a href="#founder" data-i18n="nav.founder">Об основателе</a>
+      <a href="#help" data-i18n="nav.help">Получить помощь</a>
     </nav>
-    <button class="btn btn-gold" id="connect" type="button">Подключить кошелёк</button>
+    <div class="nav-right"><label class="sr-only" for="langSel" data-i18n="lang.label">Язык</label><select id="langSel" class="lang"><option value="ru">Русский</option></select><button class="btn btn-gold" id="connect" type="button" data-i18n="btn.connect">Подключить кошелёк</button></div>
   </div>
 </header>
 
@@ -206,12 +215,12 @@
     <div class="wrap">
       <div class="hero-in">
         <div>
-          <p class="eyebrow">Благотворительная платформа на Solana</p>
-          <h1 style="margin-top:18px">Каждое сердце заслуживает <em>второй шанс.</em></h1>
-          <p class="lead">Мы помогаем людям с зависимостями и психическими трудностями, тем, кто потерял документы за границей, украинцам, пострадавшим от войны, и тем, кому нужна операция. 85% каждого пожертвования уходит на помощь сразу, в момент перевода, и это видно в блокчейне.</p>
+          <p class="eyebrow" data-i18n="hero.eyebrow">Благотворительная платформа на Solana</p>
+          <h1 style="margin-top:18px" data-i18n="hero.title">Каждое сердце заслуживает <em>второй шанс.</em></h1>
+          <p class="lead" data-i18n="hero.lead">Мы помогаем людям с зависимостями и психическими трудностями, тем, кто потерял документы за границей, украинцам, пострадавшим от войны, и тем, кому нужна операция. 85% каждого пожертвования уходит на помощь сразу, в момент перевода, и это видно в блокчейне.</p>
           <div class="cta">
-            <a class="btn btn-gold" href="#causes">Помочь сейчас</a>
-            <a class="btn btn-ghost" href="#how">Как это работает</a>
+            <a class="btn btn-gold" href="#causes" data-i18n="hero.cta">Помочь сейчас</a>
+            <a class="btn btn-ghost" href="#how" data-i18n="nav.how">Как это работает</a>
           </div>
         </div>
         <div class="hero-mark" aria-hidden="true">
@@ -219,9 +228,9 @@
         </div>
       </div>
       <div class="stats" aria-live="polite">
-        <div class="stat"><b id="sTotal">—</b><span>SOL передано на помощь</span></div>
-        <div class="stat"><b id="sCount">—</b><span>пожертвований</span></div>
-        <div class="stat"><b>85%</b><span>каждого перевода — получателю помощи</span></div>
+        <div class="stat"><b id="sTotal">—</b><span data-i18n="stat.total">SOL передано на помощь</span></div>
+        <div class="stat"><b id="sCount">—</b><span data-i18n="stat.count">пожертвований</span></div>
+        <div class="stat"><b>85%</b><span data-i18n="stat.share">каждого перевода — получателю помощи</span></div>
       </div>
     </div>
   </section>
@@ -230,9 +239,9 @@
   <section id="causes">
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">Направления помощи</p>
-        <h2 style="margin-top:12px">Выберите, кому помочь</h2>
-        <p>У каждого направления свой проверенный кошелёк получателя. Суммы обновляются прямо из блокчейна.</p>
+        <p class="eyebrow" data-i18n="causes.eyebrow">Направления помощи</p>
+        <h2 style="margin-top:12px" data-i18n="causes.title">Выберите, кому помочь</h2>
+        <p data-i18n="causes.sub">У каждого направления свой проверенный кошелёк получателя. Суммы обновляются прямо из блокчейна.</p>
       </div>
       <div class="causes" id="causeList">
         <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
@@ -244,18 +253,18 @@
   <section class="how" id="how">
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">Как это работает</p>
-        <h2 style="margin-top:12px">Без посредников и скрытых комиссий</h2>
+        <p class="eyebrow" data-i18n="nav.how">Как это работает</p>
+        <h2 style="margin-top:12px" data-i18n="how.title">Без посредников и скрытых комиссий</h2>
       </div>
       <div class="steps">
-        <div class="step"><div class="n">01</div><h3>Вы выбираете направление</h3><p>Подключаете кошелёк Phantom и указываете сумму в SOL. Комиссия сети Solana — доли цента.</p></div>
-        <div class="step"><div class="n">02</div><h3>Контракт делит перевод</h3><p>Смарт-контракт в той же транзакции отправляет 85% на кошелёк получателя и 15% создателю. Ни одна монета не проходит через чужие руки.</p></div>
-        <div class="step"><div class="n">03</div><h3>Любой может проверить</h3><p>Каждый перевод получает ссылку в Solana Explorer. Видно, кто получил деньги, сколько и когда.</p></div>
+        <div class="step"><div class="n">01</div><h3 data-i18n="how.s1t">Вы выбираете направление</h3><p data-i18n="how.s1p">Подключаете кошелёк Phantom и указываете сумму в SOL. Комиссия сети Solana — доли цента.</p></div>
+        <div class="step"><div class="n">02</div><h3 data-i18n="how.s2t">Контракт делит перевод</h3><p data-i18n="how.s2p">Смарт-контракт в той же транзакции отправляет 85% на кошелёк получателя и 15% создателю. Ни одна монета не проходит через чужие руки.</p></div>
+        <div class="step"><div class="n">03</div><h3 data-i18n="how.s3t">Любой может проверить</h3><p data-i18n="how.s3p">Каждый перевод получает ссылку в Solana Explorer. Видно, кто получил деньги, сколько и когда.</p></div>
       </div>
-      <div class="split" role="img" aria-label="85% получателю помощи, 15% создателю">
-        <div class="b">85% — получателю помощи</div><div class="c">15% — создателю</div>
+      <div class="split" role="img" aria-label="85% получателю помощи, 15% создателю" data-i18n-aria="split.aria">
+        <div class="b" data-i18n="split.b">85% — получателю помощи</div><div class="c" data-i18n="split.c">15% — создателю</div>
       </div>
-      <p class="split-note">15% — это доход создателя платформы: на её работу, поддержку и жизнь. Мы говорим об этом открыто, и процент зашит в код: его невозможно поднять.</p>
+      <p class="split-note" data-i18n="split.note">15% — это доход создателя платформы: на её работу, поддержку и жизнь. Мы говорим об этом открыто, и процент зашит в код: его невозможно поднять.</p>
     </div>
   </section>
 
@@ -263,15 +272,15 @@
   <section class="transp" id="transparency">
     <div class="wrap">
       <div class="sec-head">
-        <p class="eyebrow">Прозрачность</p>
-        <h2 style="margin-top:12px">Не верьте на слово — проверьте</h2>
-        <p>Все адреса открыты. Вы можете в любой момент посмотреть каждое пожертвование и каждый вывод.</p>
+        <p class="eyebrow" data-i18n="nav.transp">Прозрачность</p>
+        <h2 style="margin-top:12px" data-i18n="tr.title">Не верьте на слово — проверьте</h2>
+        <p data-i18n="tr.sub">Все адреса открыты. Вы можете в любой момент посмотреть каждое пожертвование и каждый вывод.</p>
       </div>
       <div class="tgrid">
-        <div class="tcard"><h3>Смарт-контракт</h3><p>Делит каждое пожертвование 85/15. Процент — константа в коде, его не может изменить даже создатель.</p><div class="addr"><a id="programLink" target="_blank" rel="noopener"></a></div></div>
-        <div class="tcard"><h3>Кошелёк создателя (15%)</h3><p>Сюда приходит только доля создателя. Все поступления видны публично.</p><div class="addr"><a id="creatorLink" target="_blank" rel="noopener">загрузка…</a></div></div>
-        <div class="tcard"><h3>Получатели не подменяются</h3><p>Адрес получателя у направления нельзя тихо заменить. Можно только закрыть направление и открыть новое — и это тоже останется в блокчейне.</p></div>
-        <div class="tcard"><h3>Открытый код</h3><p>Исходный код контракта и сайта открыт. Перед запуском с настоящими деньгами контракт пройдёт независимый аудит.</p><div class="addr"><a href="https://github.com/GeorgiiKochkinAlexandrovich/sacred-heart" target="_blank" rel="noopener">github.com/GeorgiiKochkinAlexandrovich/sacred-heart</a></div></div>
+        <div class="tcard"><h3 data-i18n="tr.c1t">Смарт-контракт</h3><p data-i18n="tr.c1p">Делит каждое пожертвование 85/15. Процент — константа в коде, его не может изменить даже создатель.</p><div class="addr"><a id="programLink" target="_blank" rel="noopener"></a></div></div>
+        <div class="tcard"><h3 data-i18n="tr.c2t">Кошелёк создателя (15%)</h3><p data-i18n="tr.c2p">Сюда приходит только доля создателя. Все поступления видны публично.</p><div class="addr"><a id="creatorLink" target="_blank" rel="noopener">загрузка…</a></div></div>
+        <div class="tcard"><h3 data-i18n="tr.c3t">Получатели не подменяются</h3><p data-i18n="tr.c3p">Адрес получателя у направления нельзя тихо заменить. Можно только закрыть направление и открыть новое — и это тоже останется в блокчейне.</p></div>
+        <div class="tcard"><h3 data-i18n="tr.c4t">Открытый код</h3><p data-i18n="tr.c4p">Исходный код контракта и сайта открыт. Перед запуском с настоящими деньгами контракт пройдёт независимый аудит.</p><div class="addr"><a href="https://github.com/GeorgiiKochkinAlexandrovich/sacred-heart" target="_blank" rel="noopener">github.com/GeorgiiKochkinAlexandrovich/sacred-heart</a></div></div>
       </div>
     </div>
   </section>
@@ -279,18 +288,18 @@
   <!-- FOUNDER -->
   <section class="founder" id="founder">
     <div class="wrap founder-in">
-      <figure class="photo" style="margin:0"><img src="founder.jpg" alt="Георгий, основатель Sacred Heart" width="640" height="800" loading="lazy"><figcaption><b>Георгий</b>основатель Sacred Heart</figcaption></figure>
+      <figure class="photo" style="margin:0"><img src="founder.jpg" data-i18n-alt="founder.alt" alt="Георгий, основатель Sacred Heart" width="640" height="800" loading="lazy"><figcaption data-i18n="founder.caption"><b>Георгий</b>основатель Sacred Heart</figcaption></figure>
       <div>
-        <p class="eyebrow">Об основателе</p>
-        <blockquote style="margin-top:18px">«Я знаю, каково это — когда кажется, что выхода нет. Поэтому я создал место, где помощь доходит до тех, кому она нужна».</blockquote>
+        <p class="eyebrow" data-i18n="nav.founder">Об основателе</p>
+        <blockquote style="margin-top:18px" data-i18n="founder.quote">«Я знаю, каково это — когда кажется, что выхода нет. Поэтому я создал место, где помощь доходит до тех, кому она нужна».</blockquote>
         <div class="story">
-          <p>Меня зовут Георгий. Я сам прошёл через зависимость и лечение в клиниках. Я знаю не по рассказам, как тяжело бывает просить о помощи — и как много значит, когда она приходит вовремя.</p>
-          <p>Я программист, и я видел, как часто пожертвования теряются по дороге или исчезают в непрозрачных отчётах. Поэтому Sacred Heart устроен так, что деньги нельзя увести незаметно: всё делает код, а каждый перевод открыт.</p>
-          <p>Выбраться мне помогли не чудо и не сила воли в одиночку, а люди, которые в нужный момент не прошли мимо. Тогда я понял простую вещь: второй шанс почти никогда не приходит сам. Его кто-то протягивает.</p>
-          <p>Поэтому направлений четыре. Зависимость, потерянные документы в чужой стране, война, болезнь — это разные беды, но в каждой из них человек вдруг остаётся один. Sacred Heart нужен для того, чтобы рядом оказался кто-то ещё.</p>
-          <p>Я не прячусь за анонимностью: моё лицо, имя и все операции платформы открыты.</p>
+          <p data-i18n="founder.p1">Меня зовут Георгий. Я сам прошёл через зависимость и лечение в клиниках. Я знаю не по рассказам, как тяжело бывает просить о помощи — и как много значит, когда она приходит вовремя.</p>
+          <p data-i18n="founder.p2">Я программист, и я видел, как часто пожертвования теряются по дороге или исчезают в непрозрачных отчётах. Поэтому Sacred Heart устроен так, что деньги нельзя увести незаметно: всё делает код, а каждый перевод открыт.</p>
+          <p data-i18n="founder.p3">Выбраться мне помогли не чудо и не сила воли в одиночку, а люди, которые в нужный момент не прошли мимо. Тогда я понял простую вещь: второй шанс почти никогда не приходит сам. Его кто-то протягивает.</p>
+          <p data-i18n="founder.p4">Поэтому направлений четыре. Зависимость, потерянные документы в чужой стране, война, болезнь — это разные беды, но в каждой из них человек вдруг остаётся один. Sacred Heart нужен для того, чтобы рядом оказался кто-то ещё.</p>
+          <p data-i18n="founder.p5">Я не прячусь за анонимностью: моё лицо, имя и все операции платформы открыты.</p>
         </div>
-        <p class="sign" style="font-family:var(--serif);font-style:italic;font-weight:500;font-size:20px">Если вы сейчас там, где был я, — вы не одни.</p>
+        <p class="sign" style="font-family:var(--serif);font-style:italic;font-weight:500;font-size:20px" data-i18n="founder.sign">Если вы сейчас там, где был я, — вы не одни.</p>
       </div>
     </div>
   </section>
@@ -299,24 +308,24 @@
   <section class="help" id="help">
     <div class="wrap help-in">
       <div>
-        <p class="eyebrow">Получить помощь</p>
-        <h2 style="margin-top:12px">Если помощь нужна вам</h2>
-        <p style="color:var(--ink-2);font-size:18px;margin-top:16px">Мы работаем с фондами, клиниками и напрямую с людьми, оказавшимися в трудной ситуации. Каждую заявку проверяем, чтобы пожертвования доходили до тех, кому они действительно нужны.</p>
+        <p class="eyebrow" data-i18n="nav.help">Получить помощь</p>
+        <h2 style="margin-top:12px" data-i18n="help.title">Если помощь нужна вам</h2>
+        <p style="color:var(--ink-2);font-size:18px;margin-top:16px" data-i18n="help.sub">Мы работаем с фондами, клиниками и напрямую с людьми, оказавшимися в трудной ситуации. Каждую заявку проверяем, чтобы пожертвования доходили до тех, кому они действительно нужны.</p>
         <ul class="list">
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Лечение зависимости или помощь психолога и психиатра</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Восстановление документов, если вы застряли за границей</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Помощь украинцам, пострадавшим от войны</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Оплата операции или срочного лечения</li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="help.li1">Лечение зависимости или помощь психолога и психиатра</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="help.li2">Восстановление документов, если вы застряли за границей</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="help.li3">Помощь украинцам, пострадавшим от войны</span></li>
+          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C9A45C" stroke-width="2.4" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg><span data-i18n="help.li4">Оплата операции или срочного лечения</span></li>
         </ul>
       </div>
       <div class="apply">
-        <h3>Как подать заявку</h3>
-        <p>Напишите нам: коротко опишите ситуацию и приложите подтверждающие документы — счёт клиники, справку, письмо консульства. Мы ответим и расскажем о следующих шагах.</p>
-        <p><b>Ваши личные данные никогда не публикуются.</b> В блокчейне виден только кошелёк получателя, без имени.</p>
+        <h3 data-i18n="help.apply">Как подать заявку</h3>
+        <p data-i18n="help.applyp">Напишите нам: коротко опишите ситуацию и приложите подтверждающие документы — счёт клиники, справку, письмо консульства. Мы ответим и расскажем о следующих шагах.</p>
+        <p data-i18n="help.privacy"><b>Ваши личные данные никогда не публикуются.</b> В блокчейне виден только кошелёк получателя, без имени.</p>
         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
-          <a class="btn btn-gold" style="background:var(--navy);color:var(--ivory)" href="mailto:georgiihelpii@proton.me">Написать на georgiihelpii@proton.me</a>
+          <a class="btn btn-gold" style="background:var(--navy);color:var(--ivory)" href="mailto:georgiihelpii@proton.me" data-i18n="help.write">Написать на georgiihelpii@proton.me</a>
         </div>
-        <p style="font-size:14px">Фонды и клиники, которые хотят стать партнёрами, тоже пишите нам.</p>
+        <p style="font-size:14px" data-i18n="help.partners">Фонды и клиники, которые хотят стать партнёрами, тоже пишите нам.</p>
       </div>
     </div>
   </section>
@@ -324,13 +333,13 @@
   <!-- FAQ -->
   <section id="faq">
     <div class="wrap">
-      <div class="sec-head"><p class="eyebrow">Вопросы</p><h2 style="margin-top:12px">Частые вопросы</h2></div>
+      <div class="sec-head"><p class="eyebrow" data-i18n="faq.eyebrow">Вопросы</p><h2 style="margin-top:12px" data-i18n="faq.title">Частые вопросы</h2></div>
       <div class="faq">
-        <details><summary>Почему 15% уходит создателю?</summary><p>Платформу нужно поддерживать, развивать и проверять заявки — это работа на полный день. Вместо скрытых «административных расходов» мы называем долю открыто и фиксируем её в коде. Больше 15% она стать не может.</p></details>
-        <details><summary>Как убедиться, что деньги дошли?</summary><p>После пожертвования вы получаете ссылку на транзакцию в Solana Explorer. В ней видно два перевода: 85% на кошелёк получателя и 15% на кошелёк создателя. Адрес каждого получателя указан на карточке направления.</p></details>
-        <details><summary>Можно пожертвовать картой, без криптовалюты?</summary><p>Пока — только через кошелёк Solana (например, Phantom). В Phantom можно купить SOL банковской картой прямо в приложении, а затем пожертвовать.</p></details>
-        <details><summary>Кто получает деньги?</summary><p>Проверенные фонды, клиники и люди, чьи заявки мы проверили. Список партнёров публикуется на сайте по мере подключения.</p></details>
-        <details><summary>Что будет, если сбор закрыт?</summary><p>Закрытое направление перестаёт принимать пожертвования — контракт просто не даст отправить перевод. История сбора остаётся в блокчейне навсегда.</p></details>
+        <details><summary data-i18n="faq.q1">Почему 15% уходит создателю?</summary><p data-i18n="faq.a1">Платформу нужно поддерживать, развивать и проверять заявки — это работа на полный день. Вместо скрытых «административных расходов» мы называем долю открыто и фиксируем её в коде. Больше 15% она стать не может.</p></details>
+        <details><summary data-i18n="faq.q2">Как убедиться, что деньги дошли?</summary><p data-i18n="faq.a2">После пожертвования вы получаете ссылку на транзакцию в Solana Explorer. В ней видно два перевода: 85% на кошелёк получателя и 15% на кошелёк создателя. Адрес каждого получателя указан на карточке направления.</p></details>
+        <details><summary data-i18n="faq.q3">Можно пожертвовать картой, без криптовалюты?</summary><p data-i18n="faq.a3">Пока — только через кошелёк Solana (например, Phantom). В Phantom можно купить SOL банковской картой прямо в приложении, а затем пожертвовать.</p></details>
+        <details><summary data-i18n="faq.q4">Кто получает деньги?</summary><p data-i18n="faq.a4">Проверенные фонды, клиники и люди, чьи заявки мы проверили. Список партнёров публикуется на сайте по мере подключения.</p></details>
+        <details><summary data-i18n="faq.q5">Что будет, если сбор закрыт?</summary><p data-i18n="faq.a5">Закрытое направление перестаёт принимать пожертвования — контракт просто не даст отправить перевод. История сбора остаётся в блокчейне навсегда.</p></details>
       </div>
     </div>
   </section>
@@ -341,13 +350,13 @@
     <div class="foot">
       <div>
         <a class="logo" href="#top"><svg width="32" height="30" viewBox="8 10 84 78" aria-hidden="true"><path d="M50 82 C26 64 14 50 14 36 C14 25 22 17 32 17 C40 17 46 22 50 29 C54 22 60 17 68 17 C78 17 86 25 86 36 C86 50 74 64 50 82 Z" fill="none" stroke="#D46A77" stroke-width="7" stroke-linejoin="round"/><path d="M50 40 C55 47 57 51 55 55 C53.5 58 46.5 58 45 55 C43 51 45 47 50 40 Z" fill="#C9A45C"/></svg><span>Sacred Heart</span></a>
-        <p style="margin-top:14px;max-width:360px">Прозрачная благотворительность на Solana. Каждое сердце заслуживает второй шанс.</p>
+        <p style="margin-top:14px;max-width:360px" data-i18n="foot.tagline">Прозрачная благотворительность на Solana. Каждое сердце заслуживает второй шанс.</p>
       </div>
-      <div><h4>Разделы</h4><ul><li><a href="#causes">Направления</a></li><li><a href="#how">Как это работает</a></li><li><a href="#transparency">Прозрачность</a></li><li><a href="#founder">Об основателе</a></li></ul></div>
-      <div><h4>Связь</h4><ul><li><a href="mailto:georgiihelpii@proton.me">georgiihelpii@proton.me</a></li><li><a href="https://github.com/GeorgiiKochkinAlexandrovich/sacred-heart" target="_blank" rel="noopener">GitHub</a></li><li>Сеть: <span id="cluster"></span></li></ul></div>
+      <div><h4 data-i18n="foot.sections">Разделы</h4><ul><li><a href="#causes" data-i18n="nav.causes">Направления</a></li><li><a href="#how" data-i18n="nav.how">Как это работает</a></li><li><a href="#transparency" data-i18n="nav.transp">Прозрачность</a></li><li><a href="#founder" data-i18n="nav.founder">Об основателе</a></li></ul></div>
+      <div><h4 data-i18n="foot.contact">Связь</h4><ul><li><a href="mailto:georgiihelpii@proton.me">georgiihelpii@proton.me</a></li><li><a href="https://github.com/GeorgiiKochkinAlexandrovich/sacred-heart" target="_blank" rel="noopener">GitHub</a></li><li><span data-i18n="foot.net">Сеть:</span> <span id="cluster"></span></li></ul></div>
     </div>
-    <div class="crisis" role="note"><b>Если вам или близкому человеку сейчас угрожает опасность</b> — позвоните в экстренную службу: 112 в Европе (включая Черногорию и Сербию), 911 в США. Sacred Heart — платформа для пожертвований, а не экстренная помощь.</div>
-    <div class="copy"><span>© 2026 Sacred Heart</span><span>Платформа не является финансовым продуктом. Пожертвования не возвращаются.</span></div>
+    <div class="crisis" role="note" data-i18n="foot.crisis"><b>Если вам или близкому человеку сейчас угрожает опасность</b> — позвоните в экстренную службу: 112 в Европе (включая Черногорию и Сербию), 911 в США. Sacred Heart — платформа для пожертвований, а не экстренная помощь.</div>
+    <div class="copy"><span>© 2026 Sacred Heart</span><span data-i18n="foot.legal">Платформа не является финансовым продуктом. Пожертвования не возвращаются.</span></div>
   </div>
 </footer>
 
@@ -362,12 +371,9 @@ const CLUSTER = "devnet"; // для запуска: "mainnet-beta" и свой R
 const RPC = CLUSTER === "devnet" ? "https://api.devnet.solana.com" : "https://api.mainnet-beta.solana.com";
 // ──────────────────────
 
-const CAUSE_INFO = [
-  { tag: "Зависимости и психическое здоровье", desc: "Оплата лечения в реабилитационных центрах, консультаций психологов и психиатров, поддержка после выписки — чтобы человек не остался один на пути восстановления.", art: "sunrise" },
-  { tag: "Документы за границей", desc: "Помощь людям, которые потеряли паспорт или документы в чужой стране: консульские сборы, переводы, временное жильё и дорога домой.", art: "passport" },
-  { tag: "Помощь украинцам", desc: "Поддержка украинцев, пострадавших от войны: жильё, еда, лекарства, восстановление документов и помощь в новом месте.", art: "home" },
-  { tag: "Операции", desc: "Сборы на операции и срочное лечение для тех, кто не может оплатить их сам. Деньги идут напрямую клиникам и проверенным получателям.", art: "pulse" },
-];
+const CAUSE_ART = ["sunrise", "passport", "home", "pulse"];
+const I = window.SH_I18N;
+const t = (k) => I.t(k);
 
 const ART = {
   sunrise: `<svg viewBox="0 0 640 280" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="640" height="280" fill="#13213A"/><circle cx="320" cy="214" r="150" fill="#1A2B47"/><circle cx="320" cy="214" r="96" fill="#22355A"/><circle cx="320" cy="214" r="54" fill="#C9A45C"/><g stroke="#C9A45C" stroke-width="3" stroke-linecap="round" opacity=".7"><path d="M320 130v-26M256 150l-16-18M384 150l16-18M218 196h-26M422 196h26"/></g><rect y="214" width="640" height="66" fill="#13213A"/><path d="M0 214H640" stroke="#2B3A52" stroke-width="2"/><path d="M320 280 C320 252 300 236 268 226" stroke="#D46A77" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="2 10"/></svg>`,
@@ -380,7 +386,7 @@ const conn = new Connection(RPC, "confirmed");
 const $ = (id) => document.getElementById(id);
 const short = (s) => s.slice(0, 4) + "…" + s.slice(-4);
 const explorer = (addr, type = "address") => `https://explorer.solana.com/${type}/${addr}${CLUSTER === "mainnet-beta" ? "" : "?cluster=" + CLUSTER}`;
-const fmtSol = (lamports) => (Number(lamports) / LAMPORTS_PER_SOL).toLocaleString("ru-RU", { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const fmtSol = (lamports) => (Number(lamports) / LAMPORTS_PER_SOL).toLocaleString(I.locale, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
 if (CLUSTER === "mainnet-beta") $("netBanner").remove();
@@ -408,7 +414,8 @@ function bs58(bytes) {
 }
 
 const [configPda] = PublicKey.findProgramAddressSync([new TextEncoder().encode("config")], PROGRAM_ID);
-let creator = null, wallet = null;
+let creator = null, wallet = null, causesCache = [], loadState = "loading";
+$("creatorLink").textContent = t("ui.loading");
 
 function decodeCause(pubkey, data) {
   const dv = new DataView(data.buffer, data.byteOffset, data.byteLength);
@@ -422,30 +429,36 @@ function decodeCause(pubkey, data) {
 }
 
 function causeCard(c) {
-  const info = CAUSE_INFO[c.category] ?? { tag: "Другое", desc: "", art: "pulse" };
+  const known = c.category >= 0 && c.category <= 3;
+  const info = {
+    tag: known ? t(`cause.${c.category}.tag`) : "",
+    title: known ? t(`cause.${c.category}.title`) : c.name,
+    desc: known ? t(`cause.${c.category}.desc`) : "",
+    art: CAUSE_ART[c.category] ?? "pulse",
+  };
   const el = document.createElement("article");
   el.className = "cause" + (c.active ? "" : " closed");
   const inputId = "amt-" + c.id;
   el.innerHTML = `
     <div class="art">${ART[info.art]}</div>
     <div class="body">
-      <p class="eyebrow">${esc(info.tag)}${c.active ? "" : " · сбор закрыт"}</p>
-      <h3>${esc(c.name)}</h3>
+      <p class="eyebrow">${esc(info.tag)}${c.active ? "" : " · " + esc(t("ui.closed"))}</p>
+      <h3>${esc(info.title)}</h3>
       <p class="desc">${esc(info.desc)}</p>
       <div class="give">
-        <div class="amounts" role="group" aria-label="Быстрый выбор суммы">
+        <div class="amounts" role="group" aria-label="${esc(t("ui.quick"))}">
           <button type="button" class="chip" data-v="0.1" ${c.active ? "" : "disabled"}>0.1</button>
           <button type="button" class="chip" data-v="0.5" ${c.active ? "" : "disabled"}>0.5</button>
           <button type="button" class="chip" data-v="1" ${c.active ? "" : "disabled"}>1</button>
         </div>
-        <label for="${inputId}">Сумма в SOL</label>
-        <input id="${inputId}" type="number" inputmode="decimal" min="0.001" step="0.001" placeholder="Сумма в SOL" ${c.active ? "" : "disabled"}>
-        <button type="button" class="btn btn-gold donate" ${c.active ? "" : "disabled"}>Помочь</button>
+        <label for="${inputId}">${esc(t("ui.amount"))}</label>
+        <input id="${inputId}" type="number" inputmode="decimal" min="0.001" step="0.001" placeholder="${esc(t("ui.amount"))}" ${c.active ? "" : "disabled"}>
+        <button type="button" class="btn btn-gold donate" ${c.active ? "" : "disabled"}>${esc(t("ui.give"))}</button>
       </div>
       <div class="meta">
-        <span>Передано: <b>${fmtSol(c.totalLamports)} SOL</b></span>
-        <span>Пожертвований: <b>${c.donations}</b></span>
-        <span>Получатель: <a href="${explorer(c.beneficiary.toBase58())}" target="_blank" rel="noopener">${short(c.beneficiary.toBase58())}</a></span>
+        <span>${esc(t("ui.sent"))}: <b>${fmtSol(c.totalLamports)} SOL</b></span>
+        <span>${esc(t("ui.donations"))}: <b>${c.donations}</b></span>
+        <span>${esc(t("ui.recipient"))}: <a href="${explorer(c.beneficiary.toBase58())}" target="_blank" rel="noopener">${short(c.beneficiary.toBase58())}</a></span>
       </div>
     </div>`;
   const input = el.querySelector("input");
@@ -460,7 +473,7 @@ function causeCard(c) {
 
 async function loadCauses() {
   const cfg = await conn.getAccountInfo(configPda);
-  if (!cfg) { $("causeList").innerHTML = '<p>Контракт ещё не запущен в этой сети.</p>'; return; }
+  if (!cfg) { causesCache = null; loadState = "ready"; $("causeList").innerHTML = `<p>${esc(t("ui.notDeployed"))}</p>`; return; }
   creator = new PublicKey(cfg.data.slice(40, 72));
   $("creatorLink").textContent = creator.toBase58();
   $("creatorLink").href = explorer(creator.toBase58());
@@ -469,8 +482,16 @@ async function loadCauses() {
   const accounts = await conn.getProgramAccounts(PROGRAM_ID, { filters: [{ memcmp: { offset: 0, bytes: bs58(accDisc) } }] });
   const causes = accounts.map((a) => decodeCause(a.pubkey, a.account.data)).sort((a, b) => a.id - b.id);
 
-  const list = $("causeList"); list.innerHTML = "";
-  if (!causes.length) list.innerHTML = "<p>Направлений пока нет.</p>";
+  causesCache = causes; loadState = "ready";
+  renderCauses();
+}
+
+function renderCauses() {
+  const list = $("causeList");
+  if (causesCache === null) { list.innerHTML = `<p>${esc(t("ui.notDeployed"))}</p>`; return; }
+  const causes = causesCache;
+  list.innerHTML = "";
+  if (!causes.length) list.innerHTML = `<p>${esc(t("ui.noCauses"))}</p>`;
   causes.forEach((c) => list.appendChild(causeCard(c)));
 
   const total = causes.reduce((s, c) => s + c.totalLamports, 0n);
@@ -482,7 +503,7 @@ async function loadCauses() {
 async function connect() {
   const p = window.phantom?.solana ?? window.solana;
   if (!p?.isPhantom) {
-    toast('Чтобы помочь, установите кошелёк <a href="https://phantom.com/download" target="_blank" rel="noopener">Phantom</a> и обновите страницу.', true);
+    toast(t("ui.installPhantom"), true);
     throw new Error("no wallet");
   }
   const r = await p.connect();
@@ -495,9 +516,9 @@ $("connect").addEventListener("click", () => connect().catch(() => {}));
 async function donate(cause, solStr, btn) {
   try {
     const sol = Number(String(solStr).replace(",", "."));
-    if (!(sol >= 0.001)) return toast("Укажите сумму — минимум 0.001 SOL.", true);
+    if (!(sol >= 0.001)) return toast(esc(t("ui.min")), true);
     const provider = await connect();
-    btn.disabled = true; btn.textContent = "Подтвердите…";
+    btn.disabled = true; btn.textContent = t("ui.confirm");
 
     const lamports = BigInt(Math.round(sol * LAMPORTS_PER_SOL));
     const data = new Uint8Array(16);
@@ -521,6 +542,30 @@ async function donate(cause, solStr, btn) {
     tx.recentBlockhash = blockhash;
 
     const { signature } = await provider.signAndSendTransaction(tx);
-    btn.textContent = "Отправка…";
+    btn.textContent = t("ui.sending");
     await conn.confirmTransaction({ signature, blockhash, lastValidBlockHeight }, "confirmed");
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+    toast(`${esc(t("ui.thanks"))} <a href="${explorer(signature, "tx")}" target="_blank" rel="noopener">${esc(t("ui.viewTx"))}</a>`, false, 15000);
+    await loadCauses();
+  } catch (e) {
+    const msg = String(e?.message ?? e);
+    if (msg === "no wallet") return;
+    if (/reject|отклон|User rejected/i.test(msg)) toast(esc(t("ui.cancelled")), true);
+    else if (/insufficient|0x1\b/i.test(msg)) toast(esc(t("ui.insufficient")), true);
+    else toast(esc(t("ui.failed")) + " " + esc(msg), true);
+  } finally {
+    if (btn.isConnected) { btn.disabled = false; btn.textContent = t("ui.give"); }
+  }
+}
+
+// смена языка: перерисовать карточки и вернуть адрес кошелька на кнопку
+I.onChange(() => {
+  if (loadState === "ready") renderCauses();
+  else if (loadState === "fail") $("causeList").innerHTML = `<p>${esc(t("ui.loadFail"))}</p>`;
+  if (wallet) $("connect").textContent = short(wallet.toBase58());
+  if (!creator) $("creatorLink").textContent = t("ui.loading");
+});
+
+loadCauses().catch((e) => { console.error(e); loadState = "fail"; $("causeList").innerHTML = `<p>${esc(t("ui.loadFail"))}</p>`; });
+</script>
+</body>
+</html>
