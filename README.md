@@ -2,6 +2,10 @@
 
 **Каждое сердце заслуживает второй шанс.**
 
+🌐 [Сайт (devnet demo)](https://sacred-heart-blond.vercel.app) · 𝕏 [@sacred_heart26](https://x.com/sacred_heart26) · ✉️ georgiihelpii@proton.me
+
+> **English.** Sacred Heart is an open-source donation platform on Solana. No token, no custody: an Anchor program splits every SOL/USDC donation in the same transaction, **94% straight to the cause's wallet, 6% to the operator**. Causes: addiction recovery & mental health, people stranded abroad without documents, humanitarian aid for Ukrainians affected by the war, surgeries. Every donation is a public on-chain event. MIT-licensed, so any NGO can fork it. Status: live on devnet, mainnet after audit.
+
 Sacred Heart — прозрачная благотворительная платформа на Solana. Каждое пожертвование делится
 смарт-контрактом прямо в момент перевода:
 
@@ -51,9 +55,10 @@ npx serve app          # сайт на http://localhost:3000
 - [ ] Управление через мультиподпись (Squads), отключение права обновлять контракт
 - [ ] Независимый аудит контракта
 - [ ] Юридическое оформление
+- [x] Заявка на грант Solana Foundation (ноябрь 2026)
 - [ ] Деплой в mainnet
 
 ## Контакты
-Георгий Кочкин, основатель — georgiihelpii@proton.me
+Георгий Кочкин, основатель — georgiihelpii@proton.me · X: [@sacred_heart26](https://x.com/sacred_heart26)
 
 Лицензия: MIT
